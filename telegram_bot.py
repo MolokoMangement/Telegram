@@ -24,18 +24,18 @@ def webhook():
     dispatcher.process_update(update)
     return 'ok', 200
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("Покажите мне как (на русском)🇷🇺", callback_data='1')],
         [InlineKeyboardButton("Покажіть мені як (українською) 🇺🇦", callback_data='2')],
         [InlineKeyboardButton("Поговорите с живым человеком 😀", callback_data='3')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text='Я готов трансформировать свою жизнь 🚀:', reply_markup=reply_markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text='Я готов трансформировать свою жизнь 🚀:', reply_markup=reply_markup)
 
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
+    query.answer()
     selected_option = query.data
     urls = {
         '1': 'https://pitch.com/v/pd-in-russian-imrthj',
@@ -44,9 +44,10 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     url = urls.get(selected_option)
     if url:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=url)
 
 if __name__ == '__main__':
-    bot.set_webhook(HEROKU_URL)
+    bot.set_webhook(HEROKU_URL)  # Ensure this is done only once, not every time the app starts
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+
 
