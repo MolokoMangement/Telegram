@@ -2,6 +2,7 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 import os
+import threading
 
 app = Flask(__name__)  # Create a Flask app
 
@@ -37,18 +38,18 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.message.reply_text(f"Opening {url}")
             await context.bot.send_message(chat_id=update.effective_chat.id, text=url)
 
-def main() -> None:
-    application = Application.builder().token("7128626321:AAEiBR9_wCkYBXmNRv0V5gZfxKs7h65cw5c").build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button))
-
-    # Set Flask to run on the port assigned by Heroku and start the Telegram bot
+def run_flask():
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, use_reloader=False)
+
+def run_bot():
+    application = Application.builder().token("7128626321:AAEiBR9_wCkYBXmNRv0V5gZfxKs7h65cw5c").build()
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(button))
     application.run_polling()
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    # Run Flask and Telegram bot in separate threads
+    threading.Thread(target=run_flask).start()
+    threading.Thread(target=run_bot).start()
 
