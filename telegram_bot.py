@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-HEROKU_URL = "https://molokomanagement-1ca2f474c16e.herokuapp.com/"  # Replace with your Heroku app's URL
+HEROKU_URL = "https://molokomanagement-1ca2f474c16e.herokuapp.com/webhook"  # Ensure webhook URL is correct
 
 bot = Bot(TOKEN)
 
@@ -19,7 +19,7 @@ def setup_dispatcher():
     dispatcher.add_handler(CallbackQueryHandler(button))
     return dispatcher
 
-# Dispatcher is setup here
+# Dispatcher is set up here
 dispatcher = setup_dispatcher()
 
 @app.route('/webhook', methods=['POST'])
@@ -60,3 +60,4 @@ if __name__ == '__main__':
     bot.set_webhook(HEROKU_URL)
     # Start Flask application
     app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+
